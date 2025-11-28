@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - E-Waste Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+    button {
+      padding: 5px 10px;
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Mobile.no</th>
+          <th>Address</th>
+          <th>Item</th>
+          <th>Pickup Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="requestTable">
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const tableBody = document.getElementById("requestTable");
+
+    async function fetchRequests() {
+      const res = await fetch("http://localhost:5000/api/requests");
+      const data = await res.json();
+      tableBody.innerHTML = "";
+
+      data.forEach((request) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${request.name}</td>
+          <td>${request.email}</td>
+          <td>${request.address}</td>
+          <td>${request.item}</td>
+          <td>${request.pickupDate}</td>
+          <td><button onclick="deleteRequest('${request._id}')">Delete</button></td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    async function deleteRequest(id) {
+      if (confirm("Are you sure you want to delete this request?")) {
+        await fetch(`http://localhost:5000/api/request/${id}`, {
+          method: "DELETE",
+        });
+        fetchRequests();
+      }
+    }
+
+    fetchRequests();
+  </script>
+</body>
+</html>
